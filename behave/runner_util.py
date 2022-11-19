@@ -602,12 +602,13 @@ def make_undefined_step_snippet(step, language=None):
 
     prefix = u"u"
     single_quote = "'"
+
     if single_quote in step.name:
         step.name = step.name.replace(single_quote, r"\'")
-
-    schema = u"@%s(%s'%s')\ndef step_impl(context):\n"
+    step_fname = u"step_%s" % (step.name.replace(' ', '_').replace('{','').replace('}',''))
+    schema = u"@%s(%s'%s')\ndef %s(context):\n"
     schema += u"    raise NotImplementedError(%s'STEP: %s %s')\n\n"
-    snippet = schema % (step.step_type, prefix, step.name,
+    snippet = schema % (step.step_type, prefix, step.name, step_fname,
                         prefix, step.step_type.title(), step.name)
     return snippet
 
