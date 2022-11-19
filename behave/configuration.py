@@ -733,6 +733,8 @@ class Configuration(object):
         for key, value in six.iteritems(args.__dict__):
             if key.startswith("_") and key not in self.cmdline_only_options:
                 continue
+            if verbose:
+                print("Overriding config: %s = %s " % (key, value))
             setattr(self, key, value)
 
         # -- ATTRIBUTE-NAME-CLEANUP:
