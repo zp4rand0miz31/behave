@@ -801,6 +801,8 @@ class Configuration(object):
         # NOTE: Reporters and Formatters can now use userdata information.
         if self.junit:
             # Buffer the output (it will be put into Junit report)
+            if verbose:
+                print("Forcing buffering of logs because of Junit option")
             self.stdout_capture = True
             self.stderr_capture = True
             self.log_capture = True
