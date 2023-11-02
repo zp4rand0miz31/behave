@@ -120,7 +120,7 @@ def format_summary2(statement_type, summary, end="\n"):
 # REPORTERS:
 # ---------------------------------------------------------------------------
 class SummaryReporter(Reporter):
-    show_failed_scenarios = True
+    show_scenarios = True  # whether to display a scenario summary at the end
     output_stream_name = "stdout"
 
     def __init__(self, config):
@@ -142,7 +142,7 @@ class SummaryReporter(Reporter):
         self.duration = 0.0
         self.run_starttime = 0
         self.run_endtime = 0
-        self.failed_scenarios = []
+        self.all_scenarios = []
         self.show_rules = True
 
     def testrun_started(self, timestamp=None):
@@ -155,13 +155,28 @@ class SummaryReporter(Reporter):
             timestamp = time_now()
         self.run_endtime = timestamp
 
-    def print_failing_scenarios(self, stream=None):
+    def _print_scenarios(self, header: str, status: Status, stream=None):
+        """
+        Print the scenarios summary, with a header title, for a given status
+        """
+
+        scenarios = [x for x in self.all_scenarios if x.status == status]
+        count = len(scenarios)
+
+        stream.write(f"\n{count} {header}:\n")
+        for scenario in scenarios:
+            if scenario.status == status:
+                stream.write(u"  %s  %s\n" % (scenario.location, scenario.name))
+
+    def print_scenarios(self, stream=None):
         if stream is None:
             stream = self.stream
 
-        stream.write("\nFailing scenarios:\n")
-        for scenario in self.failed_scenarios:
-            stream.write(u"  %s  %s\n" % (scenario.location, scenario.name))
+        self._print_scenarios("untested scenarios", Status.untested, stream)
+        self._print_scenarios("scenarios OK", Status.passed, stream)
+        self._print_scenarios("skipped scenarios", Status.skipped, stream)
+        self._print_scenarios("failed scenarios", Status.failed, stream)
+
 
     def compute_summary_sums(self):
         """(Re)Compute summary sum of all counts (except: all)."""
@@ -205,8 +220,8 @@ class SummaryReporter(Reporter):
         self.testrun_finished()
 
         # -- SHOW FAILED SCENARIOS (optional):
-        if self.show_failed_scenarios and self.failed_scenarios:
-            self.print_failing_scenarios()
+        if self.show_scenarios:
+            self.print_scenarios()
             self.stream.write("\n")
 
         # -- SHOW SUMMARY COUNTS:
@@ -232,8 +247,7 @@ class SummaryReporter(Reporter):
         self.process_run_items_for(rule)
 
     def process_scenario(self, scenario):
-        if scenario.status == Status.failed:
-            self.failed_scenarios.append(scenario)
+        self.all_scenarios.append(scenario)
 
         self.scenario_summary[scenario.status.name] += 1
         for step in scenario:
