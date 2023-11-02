@@ -146,7 +146,7 @@ class CaptureController(object):
 
         if self.config.log_capture:
             self.log_capture = LoggingCapture(self.config)
-            self.log_capture.inveigle()
+            # self.log_capture.inveigle()  # note: this is the only way I found -- for now -- to get logging working as we intend
             context.log_capture = self.log_capture
 
     def start_capture(self):
