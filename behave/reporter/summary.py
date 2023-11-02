@@ -164,13 +164,23 @@ class SummaryReporter(Reporter):
         count = len(scenarios)
 
         stream.write(f"\n{count} {header}:\n")
+        if count == 0:
+            stream.write("   -- NONE -- \n")
+
+        width = 0
         for scenario in scenarios:
             if scenario.status == status:
-                stream.write(u"  %s  %s\n" % (scenario.location, scenario.name))
+                width = max(width, len(str(scenario.location)))
+
+        for scenario in scenarios:
+            if scenario.status == status:
+                stream.write(f"  {str(scenario.location):{width}} {scenario.name}\n")
 
     def print_scenarios(self, stream=None):
         if stream is None:
             stream = self.stream
+
+        stream.write("\n**** OVERALL SUMMARY ****\n")
 
         self._print_scenarios("untested scenarios", Status.untested, stream)
         self._print_scenarios("scenarios OK", Status.passed, stream)
