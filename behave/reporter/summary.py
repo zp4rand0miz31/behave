@@ -174,7 +174,7 @@ class SummaryReporter(Reporter):
 
         for scenario in scenarios:
             if scenario.status == status:
-                stream.write(f"  {str(scenario.location):{width}} {scenario.name}\n")
+                stream.write(f"  {str(scenario.location):{width}} {scenario.name}   {int(scenario.duration)}s\n")
 
     def print_scenarios(self, stream=None):
         if stream is None:
