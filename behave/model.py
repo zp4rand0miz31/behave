@@ -1306,8 +1306,7 @@ class ScenarioOutlineBuilder(object):
             if cls.is_parametrized_tag(tag):
                 # -- OOPS: Unknown placeholder, drop tag.
                 continue
-            new_tag = Tag.make_name(tag, unescape=True)
-            tags.append(new_tag)
+            tags.append(tag)
         return tags
 
     @classmethod
